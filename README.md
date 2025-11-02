@@ -10,6 +10,7 @@ A production-ready full-stack application that automatically extracts and manage
 - [Kubernetes Deployment](#-kubernetes-deployment)
 - [Testing](#-testing)
 - [CI/CD Pipeline](#-cicd-pipeline)
+- [Security](#-security)
 - [Architecture](#-architecture)
 - [API Documentation](#-api-documentation)
 - [Configuration](#-configuration)
@@ -59,6 +60,9 @@ Use the convenient script launcher for common tasks:
 
 # Validate setup
 .\dev.ps1 validate
+
+# Run security checks
+.\dev.ps1 security-check
 
 # Clean build artifacts
 .\dev.ps1 clean
@@ -472,7 +476,54 @@ Located in `.github/workflows/ci-cd.yml`
 
 4. **Security Scan**
    - Trivy vulnerability scanning
+   - CodeQL security analysis
    - SARIF upload to GitHub
+
+## 🔒 Security
+
+### Security Policy
+
+CV Analyzer follows security best practices and maintains a comprehensive security policy. See [SECURITY.md](SECURITY.md) for:
+
+- **Vulnerability Reporting**: How to responsibly report security issues
+- **Security Measures**: Application security, data protection, authentication
+- **Development Security**: Secure coding practices, dependency management
+- **Deployment Security**: Container security, Kubernetes security, network security
+
+### Security Features
+
+**Automated Security Scanning**:
+- **CodeQL Analysis**: Weekly security code analysis
+- **Dependency Scanning**: Automated vulnerability detection with Dependabot
+- **Container Scanning**: Trivy security scanning for Docker images
+- **Secret Scanning**: GitHub's automatic secret detection
+
+**Security Tools**:
+```bash
+# Quick security check
+.\dev.ps1 security-check
+
+# Comprehensive security scan
+.\scripts\security-scan.ps1 -Type all
+
+# Check specific areas
+.\scripts\security-scan.ps1 -Type secrets
+.\scripts\security-scan.ps1 -Type dependencies
+```
+
+**Security Configuration**:
+- All sensitive data stored as GitHub secrets
+- Non-root container users
+- Minimal attack surface with Alpine-based images
+- Input validation and sanitization
+- Rate limiting and CORS policies
+
+### Vulnerability Management
+
+- **Response Time**: Critical vulnerabilities addressed within 1-3 days
+- **Automated Updates**: Dependabot creates PRs for security updates
+- **Security Monitoring**: Continuous monitoring for new vulnerabilities
+- **Incident Response**: Documented procedures for security incidents
 
 ## 🔄 CI/CD Pipeline
 

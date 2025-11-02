@@ -16,6 +16,7 @@ Use the main launcher from the root directory:
 - **`validate-setup.ps1`** - Validate the complete project setup
 - **`validate-docker.ps1`** - Validate Docker configuration
 - **`test-docker-build.ps1`** - Test Docker build process
+- **`security-scan.ps1`** - Comprehensive security vulnerability scanning
 
 ### Environment Setup
 - **`populate-env-from-secrets.ps1`** - Setup environment from GitHub secrets
@@ -35,9 +36,15 @@ Use the main launcher from the root directory:
 .\dev.ps1 build           # Build everything
 .\dev.ps1 test            # Run all tests
 .\dev.ps1 test-frontend   # Run only frontend tests
+.\dev.ps1 security-check  # Quick security check
 
 # Advanced build options
 .\scripts\build.ps1 -Test -Coverage
+
+# Security scanning
+.\scripts\security-scan.ps1 -Type all        # Full security scan
+.\scripts\security-scan.ps1 -Type secrets    # Secret scanning only
+.\scripts\security-scan.ps1 -Type dependencies # Dependency vulnerabilities
 
 # Validation
 .\scripts\validate-setup.ps1
