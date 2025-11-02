@@ -15,9 +15,19 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<ICvProcessingService, CvProcessingService>();
-builder.Services.AddScoped<ILlmService, LlmService>();
 builder.Services.AddScoped<ICandidateService, CandidateService>();
-builder.Services.AddHttpClient<ILlmService, LlmService>();
+
+// LLM Services
+builder.Services.AddScoped<OpenAIService>();
+builder.Services.AddScoped<GeminiService>();
+builder.Services.AddScoped<LlmServiceFactory>();
+builder.Services.AddScoped<ILlmService>(provider =>
+{
+    var factory = provider.GetRequiredService<LlmServiceFactory>();
+    return factory.CreateLlmService();
+});
+
+builder.Services.AddHttpClient<GeminiService>();
 
 // CORS
 builder.Services.AddCors(options =>

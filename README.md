@@ -436,6 +436,32 @@ npm run build
 
 ## 🏗️ Architecture
 
+### LLM Service Architecture
+
+The application uses a modular LLM service architecture that supports multiple AI providers:
+
+**Base Architecture**:
+- `ILlmService` - Interface defining the contract for LLM services
+- `LlmServiceBase` - Abstract base class with common functionality (prompt generation, JSON parsing)
+- `LlmServiceFactory` - Factory pattern for provider selection based on configuration
+
+**Implemented Providers**:
+- `OpenAIService` - Uses the official OpenAI .NET SDK for GPT models
+- `GeminiService` - Uses HTTP client for Google Gemini API integration
+
+**Provider Selection**:
+The system automatically selects the appropriate LLM provider based on the `LLM:Provider` configuration setting:
+- `"openai"` → OpenAIService (uses official OpenAI SDK)
+- `"gemini"` → GeminiService (uses HTTP client)
+- Default → OpenAIService
+
+**Benefits**:
+- Easy to add new LLM providers
+- Centralized prompt engineering in base class
+- Provider-specific optimizations (official SDKs vs HTTP)
+- Runtime provider switching via configuration
+- Testable architecture with dependency injection
+
 ### System Diagram
 
 ```
@@ -450,9 +476,11 @@ npm run build
           │  ASP.NET Core API      │
           │  ┌──────────────────┐  │
           │  │ Controllers      │  │
-          │  │ Services         │──┼─── OpenAI/Gemini API
-          │  │ - CvProcessing   │──┼─── PDF/DOCX Parser
-          │  │ - LLM            │  │
+          │  │ Services         │  │
+          │  │ - CvProcessing   │  │
+          │  │ - LlmFactory     │──┼─── LLM Provider Selection
+          │  │ - OpenAIService  │──┼─── OpenAI API (Official SDK)
+          │  │ - GeminiService  │──┼─── Google Gemini API (HTTP)
           │  │ - Candidate      │  │
           │  └────────┬─────────┘  │
           └───────────┼────────────┘
@@ -470,7 +498,7 @@ npm run build
 
 ### Tech Stack
 
-**Backend**: ASP.NET Core 8.0, EF Core, PostgreSQL, PdfPig, OpenXml, Swagger
+**Backend**: ASP.NET Core 8.0, EF Core, PostgreSQL, PdfPig, OpenXml, OpenAI SDK, Swagger
 **Frontend**: React 18, TypeScript 5, Vite 5, React Router 6, Axios
 **DevOps**: Docker, Kubernetes, GitHub Actions, Trivy, Hadolint
 
@@ -575,8 +603,10 @@ stringData:
 
 ### Supported Models
 
-**OpenAI**: gpt-4o-mini (recommended), gpt-4o, gpt-4-turbo, gpt-3.5-turbo
-**Gemini**: gemini-1.5-flash (recommended), gemini-1.5-pro, gemini-1.0-pro
+**OpenAI** (via Official SDK): gpt-4o-mini (recommended), gpt-4o, gpt-4-turbo, gpt-3.5-turbo
+**Gemini** (via HTTP API): gemini-1.5-flash (recommended), gemini-1.5-pro, gemini-1.0-pro
+
+**Note**: OpenAI integration uses the official OpenAI .NET SDK for improved reliability and features, while Gemini uses direct HTTP API calls.
 
 ## 🐛 Troubleshooting
 
@@ -648,12 +678,17 @@ cv-analyzer/
 ├── backend/
 │   ├── Controllers/          # API endpoints
 │   ├── Services/             # Business logic
+│   │   ├── ILlmService.cs    # LLM service interface & base class
+│   │   ├── OpenAIService.cs  # OpenAI provider (official SDK)
+│   │   ├── GeminiService.cs  # Gemini provider (HTTP client)
+│   │   ├── LlmServiceFactory.cs # Provider selection
+│   │   └── Other services...
 │   ├── Models/               # Data models
 │   ├── DTOs/                 # Data transfer objects
 │   ├── Data/                 # EF Core context
 │   └── Dockerfile
 ├── backend/CVAnalyzer.Tests/
-│   └── Services/             # Unit tests
+│   └── Services/             # Unit tests (including LLM tests)
 ├── frontend/
 │   ├── src/
 │   │   ├── components/       # React components
