@@ -1,38 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { cvApi, candidatesApi } from './api';
-import { mockCandidate, mockUploadResponse, mockCandidateListResponse, mockFile } from '../test/mockData';
-
-// Create mock axios instance
-const mockAxiosInstance = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-};
-
-// Create mock for axios.post
-const mockAxiosPost = vi.fn();
-
-// Mock axios module
-vi.mock('axios', () => {
-  const mockCreate = vi.fn(() => mockAxiosInstance);
-  return {
-    default: {
-      post: mockAxiosPost,
-      create: mockCreate,
-    },
-  };
-});
+import { describe, it, expect } from 'vitest';
 
 describe('API Service', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  afterEach(() => {
-    vi.resetAllMocks()
-  })
-  
   // TODO: Fix axios mocking for newer vitest version
   // The mocking setup needs to be updated to work with vitest's hoisting requirements
   it.skip('API tests temporarily skipped - needs mock refactoring', () => {
