@@ -1,5 +1,9 @@
 version: '3.8'
 
+# IMPORTANT: Before running docker-compose, create a .env file with your secrets.
+# Run: ./scripts/env-setup.ps1 -Source interactive
+# Or manually create .env file with required variables (see README.md)
+
 services:
   # PostgreSQL Database
   database:

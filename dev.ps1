@@ -22,7 +22,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0, HelpMessage = "Action to perform")]
-    [ValidateSet("build", "test", "test-backend", "test-frontend", "validate", "docker-validate", "docker-build", "deploy-k8s", "setup-minikube", "cleanup-k8s", "setup-env", "clean", "install", "security-check", "help")]
+    [ValidateSet("build", "test", "test-backend", "test-frontend", "validate", "docker-validate", "docker-build", "deploy-k8s", "setup-minikube", "cleanup-k8s", "env-setup", "clean", "install", "security-check", "help")]
     [string]$Action = "help"
 )
 
@@ -82,9 +82,9 @@ switch ($Action) {
         Write-Info "Cleaning up Kubernetes resources..."
         & "scripts/cleanup-k8s.ps1"
     }
-    "setup-env" {
-        Write-Info "Setting up environment from GitHub secrets..."
-        & "scripts/populate-env-from-secrets.ps1"
+    "env-setup" {
+        Write-Info "Setting up environment variables..."
+        & "scripts/env-setup.ps1" -Source interactive
     }
     "clean" {
         Write-Info "Cleaning build artifacts..."
@@ -131,7 +131,7 @@ switch ($Action) {
         Write-Host "  deploy-k8s      - Deploy to Kubernetes" -ForegroundColor Green
         Write-Host "  setup-minikube  - Setup Minikube for local development" -ForegroundColor Green
         Write-Host "  cleanup-k8s     - Cleanup Kubernetes resources" -ForegroundColor Green
-        Write-Host "  setup-env       - Setup environment from GitHub secrets" -ForegroundColor Green
+        Write-Host "  env-setup       - Setup environment variables (.env file)" -ForegroundColor Green
         Write-Host "  clean           - Clean build artifacts" -ForegroundColor Green
         Write-Host "  install         - Install dependencies for both projects" -ForegroundColor Green
         Write-Host "  security-check  - Run security vulnerability checks" -ForegroundColor Green

@@ -57,10 +57,22 @@ lerna-debug.log*
 frontend/dist/
 frontend/.vite/
 
-# Environment variables
+# Environment variables - NEVER commit these files!
+# Use scripts/env-setup.ps1 to generate .env files locally
 .env
 .env.local
 .env.*.local
+.env.development
+.env.staging
+.env.production
+.env.test
+
+# Legacy env files (deprecated)
+.env.docker
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
 
 # OS
 .DS_Store
