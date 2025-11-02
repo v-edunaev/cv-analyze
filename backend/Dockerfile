@@ -2,13 +2,19 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj and restore dependencies
-COPY CVAnalyzer.Api.csproj .
-RUN dotnet restore
+# Copy solution and project files
+COPY analyze-cv.sln .
+COPY backend/CVAnalyzer.Api.csproj backend/
+COPY backend/CVAnalyzer.Tests/CVAnalyzer.Tests.csproj backend/CVAnalyzer.Tests/
 
-# Copy everything else and build
-COPY . .
-RUN dotnet publish CVAnalyzer.sln -c Release -o /app/publish
+# Restore dependencies
+RUN dotnet restore analyze-cv.sln
+
+# Copy backend source code
+COPY backend/ backend/
+
+# Build and publish
+RUN dotnet publish analyze-cv.sln -c Release -o /app/publish
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime

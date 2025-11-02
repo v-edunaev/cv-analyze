@@ -35,6 +35,31 @@ A production-ready full-stack application that automatically extracts and manage
 
 ## 🚀 Quick Start
 
+### Development Scripts
+
+Use the convenient script launcher for common tasks:
+```powershell
+# Show all available commands
+.\dev.ps1 help
+
+# Build and test
+.\dev.ps1 build
+
+# Validate setup
+.\dev.ps1 validate
+
+# Check Docker configuration
+.\dev.ps1 docker-validate
+
+# Deploy to Kubernetes
+.\dev.ps1 deploy-k8s
+
+# Setup environment from GitHub secrets
+.\dev.ps1 setup-env
+```
+
+All scripts are organized in the `scripts/` folder. See [scripts/README.md](scripts/README.md) for details.
+
 ### Prerequisites
 
 **For Docker** (Recommended):
@@ -444,19 +469,25 @@ The project includes a comprehensive CI/CD pipeline (`.github/workflows/ci-cd.ym
 
 ### Running Locally
 
+Use the development scripts for common tasks:
 ```powershell
-# Backend (from root directory)
+# Build and test everything
+.\dev.ps1 build
+
+# Just run tests
+.\dev.ps1 test
+
+# Validate project setup
+.\dev.ps1 validate
+
+# Manual commands (if needed)
 dotnet restore analyze-cv.sln
 dotnet build analyze-cv.sln --configuration Release
 dotnet test analyze-cv.sln
-dotnet format analyze-cv.sln --verify-no-changes
 
-# Frontend
+# Frontend development
 cd frontend
-npm ci
-npm run lint
-npm run type-check
-npm run build
+npm ci && npm run dev
 ```
 
 ## 🏗️ Architecture
@@ -757,6 +788,11 @@ kubectl get events -n cv-analyzer
 
 ```
 cv-analyzer/
+├── analyze-cv.sln            # Main solution file
+├── dev.ps1                   # Quick script launcher
+├── .env.example              # Environment template
+├── .env.docker.example       # Docker environment template
+├── docker-compose.yml        # Docker services
 ├── backend/
 │   ├── Controllers/          # API endpoints
 │   ├── Services/             # Business logic
@@ -768,9 +804,8 @@ cv-analyzer/
 │   ├── Models/               # Data models
 │   ├── DTOs/                 # Data transfer objects
 │   ├── Data/                 # EF Core context
+│   ├── CVAnalyzer.Tests/     # Unit tests
 │   └── Dockerfile
-├── backend/CVAnalyzer.Tests/
-│   └── Services/             # Unit tests (including LLM tests)
 ├── frontend/
 │   ├── src/
 │   │   ├── components/       # React components
@@ -778,17 +813,23 @@ cv-analyzer/
 │   │   └── services/         # API client
 │   ├── Dockerfile
 │   └── nginx.conf
-├── scripts/                  # Development and deployment scripts
-│   ├── create-env-template.ps1    # PowerShell env template generator
-│   ├── create-env-template.sh     # Bash env template generator
-│   ├── setup-github-secrets.ps1   # GitHub secrets setup helper
-│   └── populate-env-from-secrets.ps1 # GitHub CLI env populator
+├── scripts/                  # All development scripts
+│   ├── build.ps1             # Build and test
+│   ├── validate-setup.ps1    # Project validation  
+│   ├── validate-docker.ps1   # Docker validation
+│   ├── deploy-k8s.ps1        # Kubernetes deployment
+│   ├── setup-minikube.ps1    # Local K8s setup
+│   ├── cleanup-k8s.ps1       # Resource cleanup
+│   ├── populate-env-from-secrets.ps1 # GitHub secrets setup
+│   └── README.md             # Scripts documentation
+├── test-data/                # Sample CV files
+│   ├── valid-cv-sample.*     # Valid test files
+│   ├── invalid-cv-*.*        # Invalid test files  
+│   └── README.md             # Test data documentation
 ├── k8s/                      # Kubernetes manifests
 ├── .github/workflows/        # CI/CD pipeline
 │   └── ci-cd.yml            # Main workflow with secrets integration
-├── test-data/                # Sample CVs
-├── docker-compose.yml
-└── README.md
+└── README.md                 # This file
 ```
 
 ## 🚀 Deployment Checklist
@@ -837,7 +878,3 @@ cv-analyzer/
 - PdfPig & DocumentFormat.OpenXml for file parsing
 - Microsoft for ASP.NET Core & EF Core
 - React team for React framework
-
----
-
-**Built with ❤️ using ASP.NET Core, React, TypeScript, and AI**

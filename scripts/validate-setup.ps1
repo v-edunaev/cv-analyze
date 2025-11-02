@@ -173,8 +173,8 @@ if ($ErrorCount -eq 0) {
     Write-Success "All critical components are properly configured!"
     Write-Host ""
     Write-Info "Next steps:"
-    Write-Info "  1. Set up environment: .\setup-env.ps1"
-    Write-Info "  2. Build and test: .\build.ps1 -Test"
+    Write-Info "  1. Set up environment: .\dev.ps1 setup-env"
+    Write-Info "  2. Build and test: .\dev.ps1 build"
     Write-Info "  3. Run locally: dotnet run --project backend/CVAnalyzer.Api.csproj"
     Write-Info "  4. Or use Docker: docker-compose up"
 } else {

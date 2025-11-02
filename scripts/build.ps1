@@ -51,8 +51,8 @@ function Write-Error { param($Message) Write-Host $Message -ForegroundColor Red 
 function Write-Warning { param($Message) Write-Host $Message -ForegroundColor Yellow }
 function Write-Info { param($Message) Write-Host $Message -ForegroundColor Cyan }
 
-# Get script directory (should be root of project)
-$ScriptRoot = $PSScriptRoot
+# Get script directory and find the root directory (parent of scripts)
+$ScriptRoot = Split-Path $PSScriptRoot -Parent
 $SolutionFile = Join-Path $ScriptRoot "analyze-cv.sln"
 
 # Check if solution file exists
@@ -101,7 +101,7 @@ try {
         if ($Coverage) {
             $testArgs += @(
                 "--collect:`"XPlat Code Coverage`"",
-                "--results-directory", "backend/coverage"
+                "--results-directory", (Join-Path $ScriptRoot "backend/coverage")
             )
         }
         
@@ -113,7 +113,7 @@ try {
         Write-Success "✓ All tests passed"
         
         if ($Coverage) {
-            Write-Info "Code coverage reports generated in backend/coverage/"
+            Write-Info "Code coverage reports generated in $(Join-Path $ScriptRoot 'backend/coverage')/"
         }
     }
 
@@ -134,9 +134,9 @@ try {
     
     if (-not $Test -and -not $Format) {
         Write-Info "Next steps:"
-        Write-Info "  - Run tests: .\build.ps1 -Test"
-        Write-Info "  - Check formatting: .\build.ps1 -Format"
-        Write-Info "  - Full build with tests: .\build.ps1 -Configuration Release -Test -Coverage"
+        Write-Info "  - Run tests: .\dev.ps1 test"
+        Write-Info "  - Check formatting: .\scripts\build.ps1 -Format"
+        Write-Info "  - Full build with tests: .\dev.ps1 build"
     }
 }
 catch {

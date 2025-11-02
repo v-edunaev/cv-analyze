@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ master, dev ]
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   backend-build-test:
     name: Backend Build & Test
@@ -136,7 +140,7 @@ jobs:
     - name: Build backend Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./backend
+        context: .
         file: ./backend/Dockerfile
         push: false
         tags: cv-analyzer-backend:latest
