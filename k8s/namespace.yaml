@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cv-analyzer
+  labels:
+    name: cv-analyzer
+    app: cv-analyzer

@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  database:
+    image: postgres:15-alpine
+    container_name: cv-analyzer-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cv_analyzer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cv-analyzer-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cv-analyzer-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=database;Database=cv_analyzer;Username=postgres;Password=${DB_PASSWORD:-postgres123}
+      - LLM__Provider=${LLM_PROVIDER:-OpenAI}
+      - LLM__OpenAI__ApiKey=${OPENAI_API_KEY}
+      - LLM__OpenAI__Model=${OPENAI_MODEL:-gpt-4o-mini}
+      - LLM__Gemini__ApiKey=${GEMINI_API_KEY}
+      - LLM__Gemini__Model=${GEMINI_MODEL:-gemini-1.5-flash}
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - cv-analyzer-network
+    volumes:
+      - backend_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cv-analyzer-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - cv-analyzer-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  cv-analyzer-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  backend_uploads:
+    driver: local

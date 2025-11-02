@@ -1,0 +1,61 @@
+JOHN SMITH
+Software Engineer
+
+Contact Information:
+Email: john.smith@email.com
+Phone: +1 (555) 123-4567
+Location: San Francisco, CA
+LinkedIn: linkedin.com/in/johnsmith
+GitHub: github.com/johnsmith
+
+PROFESSIONAL SUMMARY
+Experienced software engineer with 8+ years of expertise in full-stack development. Proven track record of delivering scalable web applications using modern technologies. Strong background in cloud architecture and microservices.
+
+WORK EXPERIENCE
+
+Senior Software Engineer
+Tech Solutions Inc., San Francisco, CA
+January 2020 - Present
+• Led development of microservices architecture serving 1M+ daily users
+• Implemented CI/CD pipelines reducing deployment time by 60%
+• Mentored team of 5 junior developers
+• Technologies: C#, .NET Core, React, Azure, Kubernetes
+
+Software Engineer
+Digital Innovations LLC, San Jose, CA
+June 2017 - December 2019
+• Developed RESTful APIs for e-commerce platform
+• Optimized database queries improving performance by 40%
+• Collaborated with cross-functional teams on agile projects
+• Technologies: ASP.NET, SQL Server, Angular, Docker
+
+Junior Developer
+StartUp Tech, Palo Alto, CA
+August 2015 - May 2017
+• Built responsive web applications using React and Node.js
+• Participated in code reviews and agile ceremonies
+• Contributed to open-source projects
+• Technologies: JavaScript, TypeScript, MongoDB, Express.js
+
+EDUCATION
+
+Bachelor of Science in Computer Science
+Stanford University, Stanford, CA
+Graduated: May 2015
+GPA: 3.8/4.0
+
+SKILLS
+
+Programming Languages: C#, JavaScript, TypeScript, Python, SQL
+Frameworks: .NET Core, ASP.NET, React, Angular, Node.js
+Databases: PostgreSQL, SQL Server, MongoDB, Redis
+Cloud & DevOps: Azure, AWS, Docker, Kubernetes, CI/CD
+Tools: Git, Visual Studio, VS Code, JIRA, Postman
+
+CERTIFICATIONS
+• Microsoft Certified: Azure Developer Associate (2021)
+• AWS Certified Solutions Architect (2020)
+
+LANGUAGES
+• English (Native)
+• Spanish (Professional Working Proficiency)

@@ -1,0 +1,112 @@
+SARAH JOHNSON
+Email: sarah.johnson@email.com
+Phone: +1 (555) 123-4567
+Location: Seattle, WA 98101
+LinkedIn: https://linkedin.com/in/sarahjohnson
+GitHub: https://github.com/sarahjohnson
+Portfolio: https://sarahjohnson.dev
+
+PROFESSIONAL SUMMARY
+Results-driven Full Stack Software Engineer with 7+ years of experience building scalable web applications and cloud-based solutions. Expertise in modern JavaScript frameworks, microservices architecture, and agile development. Passionate about clean code, user experience, and mentoring junior developers.
+
+WORK EXPERIENCE
+
+Senior Software Engineer
+TechCorp Industries | Seattle, WA
+March 2020 - Present
+• Led development of microservices-based e-commerce platform serving 2M+ users
+• Architected and implemented React-based admin dashboard reducing operational costs by 40%
+• Mentored team of 5 junior developers through code reviews and pair programming
+• Implemented CI/CD pipeline using GitHub Actions, reducing deployment time by 60%
+• Collaborated with product managers and designers to deliver features on time
+
+Full Stack Developer  
+CloudStart Solutions | Remote
+June 2018 - February 2020
+• Developed RESTful APIs using Node.js and Express serving 500K+ daily requests
+• Built responsive web applications using React, Redux, and Material-UI
+• Integrated third-party services including Stripe, SendGrid, and AWS S3
+• Optimized database queries resulting in 50% performance improvement
+• Participated in agile ceremonies and sprint planning
+
+Software Developer
+InnovateTech | San Francisco, CA
+January 2016 - May 2018
+• Created internal tools and dashboards using Vue.js and Python Django
+• Implemented authentication system using OAuth 2.0 and JWT
+• Wrote comprehensive unit and integration tests achieving 85% code coverage
+• Collaborated with cross-functional teams to deliver customer-facing features
+• Provided technical support and bug fixes for production applications
+
+Junior Developer (Internship)
+StartupHub | San Francisco, CA  
+June 2015 - December 2015
+• Assisted in developing mobile-responsive websites using HTML, CSS, and JavaScript
+• Fixed bugs and implemented minor features under senior developer supervision
+• Participated in daily standups and learned agile development practices
+
+EDUCATION
+
+Master of Science in Computer Science
+University of Washington | Seattle, WA
+September 2013 - June 2015
+GPA: 3.9/4.0
+Focus: Software Engineering and Distributed Systems
+
+Bachelor of Science in Computer Science
+University of California, Berkeley | Berkeley, CA
+September 2009 - May 2013
+GPA: 3.7/4.0
+Honors: Dean's List, Cum Laude
+
+TECHNICAL SKILLS
+
+Programming Languages:
+JavaScript, TypeScript, Python, Java, C#, SQL, HTML, CSS
+
+Frontend Technologies:
+React, Vue.js, Angular, Next.js, Redux, Tailwind CSS, Material-UI, SASS
+
+Backend Technologies:
+Node.js, Express, Django, Flask, ASP.NET Core, Spring Boot
+
+Databases:
+PostgreSQL, MySQL, MongoDB, Redis, DynamoDB
+
+Cloud & DevOps:
+AWS (EC2, S3, Lambda, RDS), Azure, Docker, Kubernetes, Jenkins, GitHub Actions
+
+Tools & Others:
+Git, REST APIs, GraphQL, Microservices, Agile/Scrum, JIRA, Figma
+
+CERTIFICATIONS
+
+AWS Certified Solutions Architect - Associate
+Amazon Web Services | 2022
+
+Professional Scrum Master I (PSM I)
+Scrum.org | 2021
+
+PROJECTS
+
+Open Source Contributions
+• Active contributor to React ecosystem with 500+ GitHub stars
+• Maintained npm package for form validation used by 10K+ developers
+
+Personal Portfolio Platform
+• Built full-stack portfolio generator using MERN stack
+• Implemented real-time collaboration features using WebSockets
+• Deployed on AWS with CI/CD pipeline
+
+LANGUAGES
+
+English - Native
+Spanish - Professional Working Proficiency
+Mandarin Chinese - Elementary Proficiency
+
+ACHIEVEMENTS
+
+• Won "Best Innovation Award" at TechCorp Hackathon 2022
+• Speaker at React Conference 2021 - "Building Scalable Component Libraries"
+• Increased team velocity by 35% through process improvements
+• Published technical articles on Medium with 50K+ views

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cv-analyzer-config
+  namespace: cv-analyzer
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  LLM_PROVIDER: "OpenAI"
+  OPENAI_MODEL: "gpt-4o-mini"
+  GEMINI_MODEL: "gemini-1.5-flash"
+  DATABASE_HOST: "postgres-service"
+  DATABASE_NAME: "cv_analyzer"
+  DATABASE_USER: "postgres"

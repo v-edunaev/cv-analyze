@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: cv-analyzer
+  labels:
+    app: backend
+    component: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        component: api
+    spec:
+      containers:
+      - name: backend
+        image: cv-analyzer-backend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: http
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: cv-analyzer-config
+              key: ASPNETCORE_ENVIRONMENT
+        - name: ASPNETCORE_URLS
+          value: "http://+:5000"
+        - name: ConnectionStrings__DefaultConnection
+          valueFrom:
+            secretKeyRef:
+              name: cv-analyzer-secrets
+              key: connection-string
+        - name: LLM__Provider
+          valueFrom:
+            configMapKeyRef:
+              name: cv-analyzer-config
+              key: LLM_PROVIDER
+        - name: LLM__OpenAI__ApiKey
+          valueFrom:
+            secretKeyRef:
+              name: cv-analyzer-secrets
+              key: openai-api-key
+        - name: LLM__OpenAI__Model
+          valueFrom:
+            configMapKeyRef:
+              name: cv-analyzer-config
+              key: OPENAI_MODEL
+        - name: LLM__Gemini__ApiKey
+          valueFrom:
+            secretKeyRef:
+              name: cv-analyzer-secrets
+              key: gemini-api-key
+        - name: LLM__Gemini__Model
+          valueFrom:
+            configMapKeyRef:
+              name: cv-analyzer-config
+              key: GEMINI_MODEL
+        volumeMounts:
+        - name: uploads
+          mountPath: /app/uploads
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: uploads-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: cv-analyzer
+  labels:
+    app: backend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  selector:
+    app: backend
