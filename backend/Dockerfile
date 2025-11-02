@@ -21,10 +21,10 @@ COPY --from=build /app/publish .
 RUN mkdir -p /app/uploads
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5050
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_URLS=http://+:5050
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Run the application

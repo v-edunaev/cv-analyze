@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Candidate, WorkExperience, Education, Skill } from '../types';
+import { Candidate, WorkExperience, Education } from '../types';
+// @ts-ignore: side-effect CSS import has no type declarations
 import './ConfirmationDialog.css';
 
 interface ConfirmationDialogProps {
@@ -29,11 +30,6 @@ function ConfirmationDialog({ candidate, rawText, onConfirm, onCancel }: Confirm
     setEditedCandidate(prev => ({ ...prev, educations: updated }));
   };
 
-  const handleSkillChange = (index: number, field: keyof Skill, value: any) => {
-    const updated = [...editedCandidate.skills];
-    updated[index] = { ...updated[index], [field]: value };
-    setEditedCandidate(prev => ({ ...prev, skills: updated }));
-  };
 
   const removeWorkExperience = (index: number) => {
     const updated = editedCandidate.workExperiences.filter((_, i) => i !== index);
