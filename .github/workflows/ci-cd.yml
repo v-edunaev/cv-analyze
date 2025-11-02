@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [ master, dev ]
 
-permissions:
-  contents: read
-  security-events: write
-
 jobs:
   backend-build-test:
     name: Backend Build & Test
@@ -174,6 +170,8 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    permissions: write-all
+
     
     steps:
     - uses: actions/checkout@v4
