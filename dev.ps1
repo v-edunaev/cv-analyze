@@ -22,7 +22,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0, HelpMessage = "Action to perform")]
-    [ValidateSet("build", "test", "validate", "docker-validate", "docker-build", "deploy-k8s", "setup-minikube", "cleanup-k8s", "setup-env", "help")]
+    [ValidateSet("build", "test", "test-backend", "test-frontend", "validate", "docker-validate", "docker-build", "deploy-k8s", "setup-minikube", "cleanup-k8s", "setup-env", "clean", "install", "help")]
     [string]$Action = "help"
 )
 
@@ -41,6 +41,22 @@ switch ($Action) {
     "test" {
         Write-Info "Running tests only..."
         & "scripts/build.ps1" -Test
+    }
+    "test-backend" {
+        Write-Info "Running backend tests with coverage..."
+        Set-Location "backend"
+        dotnet test --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+        Set-Location ".."
+    }
+    "test-frontend" {
+        Write-Info "Running frontend tests with coverage..."
+        Set-Location "frontend"
+        if (-not (Test-Path "node_modules")) {
+            Write-Info "Installing frontend dependencies..."
+            npm install
+        }
+        npm run test:coverage
+        Set-Location ".."
     }
     "validate" {
         Write-Info "Validating project setup..."
@@ -70,11 +86,41 @@ switch ($Action) {
         Write-Info "Setting up environment from GitHub secrets..."
         & "scripts/populate-env-from-secrets.ps1"
     }
+    "clean" {
+        Write-Info "Cleaning build artifacts..."
+        # Backend clean
+        Set-Location "backend"
+        dotnet clean
+        Remove-Item -Path "bin", "obj" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "coverage" -Recurse -Force -ErrorAction SilentlyContinue
+        Set-Location ".."
+        
+        # Frontend clean
+        Set-Location "frontend"
+        Remove-Item -Path "dist", "coverage" -Recurse -Force -ErrorAction SilentlyContinue
+        Set-Location ".."
+    }
+    "install" {
+        Write-Info "Installing dependencies..."
+        # Backend dependencies
+        Write-Info "Installing backend dependencies..."
+        Set-Location "backend"
+        dotnet restore
+        Set-Location ".."
+        
+        # Frontend dependencies
+        Write-Info "Installing frontend dependencies..."
+        Set-Location "frontend"
+        npm install
+        Set-Location ".."
+    }
     "help" {
         Write-Info "Available commands:"
         Write-Host ""
         Write-Host "  build           - Build and test the solution" -ForegroundColor Green
         Write-Host "  test            - Run tests only" -ForegroundColor Green
+        Write-Host "  test-backend    - Run backend tests with coverage" -ForegroundColor Green
+        Write-Host "  test-frontend   - Run frontend tests with coverage" -ForegroundColor Green
         Write-Host "  validate        - Validate project setup" -ForegroundColor Green
         Write-Host "  docker-validate - Validate Docker configuration" -ForegroundColor Green
         Write-Host "  docker-build    - Test Docker build process" -ForegroundColor Green
@@ -82,9 +128,12 @@ switch ($Action) {
         Write-Host "  setup-minikube  - Setup Minikube for local development" -ForegroundColor Green
         Write-Host "  cleanup-k8s     - Cleanup Kubernetes resources" -ForegroundColor Green
         Write-Host "  setup-env       - Setup environment from GitHub secrets" -ForegroundColor Green
+        Write-Host "  clean           - Clean build artifacts" -ForegroundColor Green
+        Write-Host "  install         - Install dependencies for both projects" -ForegroundColor Green
         Write-Host ""
         Write-Info "Examples:"
         Write-Host "  .\dev.ps1 build" -ForegroundColor Gray
+        Write-Host "  .\dev.ps1 test-frontend" -ForegroundColor Gray
         Write-Host "  .\dev.ps1 validate" -ForegroundColor Gray
         Write-Host "  .\dev.ps1 docker-validate" -ForegroundColor Gray
         Write-Host ""

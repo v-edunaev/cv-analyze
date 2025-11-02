@@ -15,6 +15,7 @@ Use the main launcher from the root directory:
 - **`build.ps1`** - Build and test the solution with various options
 - **`validate-setup.ps1`** - Validate the complete project setup
 - **`validate-docker.ps1`** - Validate Docker configuration
+- **`test-docker-build.ps1`** - Test Docker build process
 
 ### Environment Setup
 - **`populate-env-from-secrets.ps1`** - Setup environment from GitHub secrets
@@ -29,23 +30,21 @@ Use the main launcher from the root directory:
 ## Usage Examples
 
 ```powershell
-# Quick build and test
-.\scripts\build.ps1 -Test
+# Development workflow (using root dev.ps1)
+.\dev.ps1 install         # Install all dependencies
+.\dev.ps1 build           # Build everything
+.\dev.ps1 test            # Run all tests
+.\dev.ps1 test-frontend   # Run only frontend tests
 
-# Full build with coverage
-.\scripts\build.ps1 -Configuration Release -Test -Coverage
+# Advanced build options
+.\scripts\build.ps1 -Test -Coverage
 
-# Validate everything
+# Validation
 .\scripts\validate-setup.ps1
-
-# Check Docker setup
 .\scripts\validate-docker.ps1
 
-# Deploy to Kubernetes
+# Deployment
 .\scripts\deploy-k8s.ps1
-
-# Setup local environment
-.\scripts\populate-env-from-secrets.ps1
 ```
 
 ## Organization

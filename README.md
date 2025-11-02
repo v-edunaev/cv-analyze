@@ -42,20 +42,26 @@ Use the convenient script launcher for common tasks:
 # Show all available commands
 .\dev.ps1 help
 
-# Build and test
+# Install dependencies
+.\dev.ps1 install
+
+# Build everything
 .\dev.ps1 build
+
+# Run all tests
+.\dev.ps1 test
+
+# Run only frontend tests
+.\dev.ps1 test-frontend
+
+# Run only backend tests  
+.\dev.ps1 test-backend
 
 # Validate setup
 .\dev.ps1 validate
 
-# Check Docker configuration
-.\dev.ps1 docker-validate
-
-# Deploy to Kubernetes
-.\dev.ps1 deploy-k8s
-
-# Setup environment from GitHub secrets
-.\dev.ps1 setup-env
+# Clean build artifacts
+.\dev.ps1 clean
 ```
 
 All scripts are organized in the `scripts/` folder. See [scripts/README.md](scripts/README.md) for details.
@@ -393,11 +399,27 @@ open coverage-report/index.html  # macOS
 
 ### Frontend Tests  
 
-```powershell
+**Comprehensive unit testing with Vitest + Testing Library**:
+```bash
 cd frontend
 
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests with UI
+npm run test:ui
+
 # Type check
-npm run type-check
+npx tsc --noEmit
 
 # Lint
 npm run lint
@@ -406,13 +428,20 @@ npm run lint
 npm run build
 ```
 
+**Test Coverage**:
+- **Component Tests**: Upload CV, Dashboard, Candidate Management
+- **Service Tests**: API client, HTTP error handling  
+- **Integration Tests**: File upload workflows, data validation
+- **Mock Data**: Realistic test fixtures based on actual CV formats
+- **Error Scenarios**: Network failures, validation errors, edge cases
+
 ### Test Data
 
 Sample CVs available in `test-data/`:
 - `valid-cv-sample.txt` - Plain text CV
-- `valid-cv-sample.pdf` - PDF CV (generated)
-- `valid-cv-sample.docx` - Word CV (generated)
-- `invalid-cv-*.txt` - Test edge cases
+- `invalid-cv-corrupted.txt` - Corrupted file test
+- `invalid-cv-empty.txt` - Empty file test  
+- `invalid-cv-too-short.txt` - Insufficient content test
 
 ## 🔄 CI/CD Pipeline
 
@@ -428,10 +457,13 @@ Located in `.github/workflows/ci-cd.yml`
    - C# linting
 
 2. **Frontend Build & Test**
-   - Build React app
-   - ESLint
-   - TypeScript check
-   - Production build
+   - Node.js 18 setup with npm caching
+   - Dependency installation
+   - ESLint code quality checks
+   - TypeScript compilation validation
+   - Comprehensive unit tests with Vitest
+   - Coverage reporting and upload
+   - Production build verification
 
 3. **Docker Build**
    - Multi-stage builds
