@@ -22,7 +22,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0, HelpMessage = "Action to perform")]
-    [ValidateSet("build", "test", "test-backend", "test-frontend", "validate", "docker-validate", "docker-build", "deploy-k8s", "setup-minikube", "cleanup-k8s", "env-setup", "clean", "install", "security-check", "help")]
+    [ValidateSet("build", "test", "test-backend", "test-frontend", "validate", "docker-validate", "docker-build", "deploy-k8s", "setup-minikube", "cleanup-k8s", "env-setup", "clean", "install", "security-check", "check-logs", "help")]
     [string]$Action = "help"
 )
 
@@ -104,6 +104,10 @@ switch ($Action) {
         Write-Info "Running comprehensive security scan..."
         & "scripts/security-scan.ps1" -Type all
     }
+    "check-logs" {
+        Write-Info "Checking Docker logs for secret leakage..."
+        & "scripts/check-docker-logs.ps1"
+    }
     "install" {
         Write-Info "Installing dependencies..."
         # Backend dependencies
@@ -135,11 +139,13 @@ switch ($Action) {
         Write-Host "  clean           - Clean build artifacts" -ForegroundColor Green
         Write-Host "  install         - Install dependencies for both projects" -ForegroundColor Green
         Write-Host "  security-check  - Run security vulnerability checks" -ForegroundColor Green
+        Write-Host "  check-logs      - Check Docker logs for secret leakage" -ForegroundColor Green
         Write-Host ""
         Write-Info "Examples:"
         Write-Host "  .\dev.ps1 build" -ForegroundColor Gray
         Write-Host "  .\dev.ps1 test-frontend" -ForegroundColor Gray
         Write-Host "  .\dev.ps1 security-check" -ForegroundColor Gray
+        Write-Host "  .\dev.ps1 check-logs" -ForegroundColor Gray
         Write-Host "  .\dev.ps1 validate" -ForegroundColor Gray
         Write-Host "  .\dev.ps1 docker-validate" -ForegroundColor Gray
         Write-Host ""
