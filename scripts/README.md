@@ -19,9 +19,10 @@ Use the main launcher from the root directory:
 - **`security-scan.ps1`** - Comprehensive security vulnerability scanning
 
 ### Environment Setup
-- **`populate-env-from-secrets.ps1`** - Setup environment from GitHub secrets
+- **`env-setup.ps1`** - **NEW**: Dynamic .env file creation (interactive, GitHub, or parameters)
+- **`populate-env-from-secrets.ps1`** - Legacy: Setup environment from GitHub secrets
 - **`setup-github-secrets.ps1`** - Helper to setup GitHub secrets
-- **`create-env-template.ps1`** / **`create-env-template.sh`** - Create environment templates
+- **`create-env-template.ps1`** / **`create-env-template.sh`** - Legacy: Create environment templates
 
 ### Kubernetes Deployment
 - **`deploy-k8s.ps1`** / **`deploy-k8s.sh`** - Deploy to Kubernetes
@@ -32,11 +33,17 @@ Use the main launcher from the root directory:
 
 ```powershell
 # Development workflow (using root dev.ps1)
+.\dev.ps1 env-setup       # NEW: Setup environment interactively
 .\dev.ps1 install         # Install all dependencies
 .\dev.ps1 build           # Build everything
 .\dev.ps1 test            # Run all tests
 .\dev.ps1 test-frontend   # Run only frontend tests
 .\dev.ps1 security-check  # Quick security check
+
+# Environment setup options
+.\scripts\env-setup.ps1 -Source interactive              # Interactive prompts (recommended)
+.\scripts\env-setup.ps1 -Source github -Repository "owner/repo"  # From GitHub secrets
+.\scripts\env-setup.ps1 -Source parameters -DbPassword "pass" -LlmProvider "OpenAI" -OpenAiApiKey "sk-..."
 
 # Advanced build options
 .\scripts\build.ps1 -Test -Coverage

@@ -35,6 +35,16 @@ try {
 Write-Host ""
 Write-Host "Building Docker images..." -ForegroundColor Yellow
 
+# Check if .env file exists, if not create it
+if (-not (Test-Path ".env")) {
+    Write-Host "⚠ .env file not found. Creating from secrets..." -ForegroundColor Yellow
+    & "$PSScriptRoot\env-setup.ps1" -Source interactive -Force
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "✗ Failed to create .env file" -ForegroundColor Red
+        exit 1
+    }
+}
+
 Write-Host "Building backend image..."
 docker build -t "${DOCKER_REGISTRY}/cv-analyzer-backend:${VERSION}" ./backend
 Write-Host "✓ Backend image built" -ForegroundColor Green

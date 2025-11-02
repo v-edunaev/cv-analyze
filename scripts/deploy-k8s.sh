@@ -52,6 +52,20 @@ print_status "docker found"
 echo ""
 echo "Building Docker images..."
 
+# Check if .env file exists, if not create it
+if [ ! -f ".env" ]; then
+    print_warning ".env file not found."
+    echo "Please create .env file with required environment variables."
+    echo "You can use: ./scripts/env-setup.ps1 -Source interactive"
+    echo "Or manually create .env with: DB_PASSWORD, LLM_PROVIDER, OPENAI_API_KEY, etc."
+    read -p "Continue without .env? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_error "Deployment cancelled. Please create .env file first."
+        exit 1
+    fi
+fi
+
 echo "Building backend image..."
 docker build -t ${DOCKER_REGISTRY}/cv-analyzer-backend:${VERSION} ./backend
 print_status "Backend image built"

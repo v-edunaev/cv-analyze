@@ -95,9 +95,12 @@ All scripts are organized in the `scripts/` folder. See [scripts/README.md](scri
 git clone https://github.com/yourusername/cv-analyzer.git
 cd cv-analyzer
 
-# 2. Configure environment
-Copy-Item .env.docker .env
-# Edit .env and add your OpenAI or Gemini API key
+# 2. Setup environment variables (interactive)
+.\scripts\env-setup.ps1 -Source interactive
+# You will be prompted to enter:
+# - Database password
+# - LLM Provider (OpenAI or Gemini)
+# - API keys and model preferences
 
 # 3. Start all services  
 docker-compose up -d
@@ -114,9 +117,9 @@ docker-compose up -d
 git clone https://github.com/yourusername/cv-analyzer.git
 cd cv-analyzer
 
-# 2. Configure environment
-cp .env.docker .env
-# Edit .env and add your OpenAI or Gemini API key
+# 2. Setup environment variables (interactive)
+pwsh ./scripts/env-setup.ps1 -Source interactive
+# Or manually create .env file with required variables
 
 # 3. Start all services  
 docker-compose up -d
@@ -701,20 +704,35 @@ GET /health
 
 The application uses environment variables for configuration. **Never commit actual API keys or passwords to version control.**
 
+All `.env` files are automatically ignored by git. The application generates `.env` files dynamically during:
+- Local development (interactive prompt or GitHub CLI)
+- CI/CD pipelines (from GitHub secrets)
+- Deployments (from secrets managers)
+
 ### Local Development Setup
 
-**Quick Setup with Script**:
+**Recommended: Interactive Setup** (Easiest):
 ```powershell
-# Windows (PowerShell)
-.\scripts\create-env-template.ps1
+# Use the env-setup script for interactive prompts
+.\scripts\env-setup.ps1 -Source interactive
 
-# macOS/Linux (Bash)
-./scripts/create-env-template.sh
+# Or use the quick command
+.\dev.ps1 env-setup
 ```
 
-This creates a `.env` file with placeholder values that you need to replace with actual secrets.
+The script will prompt you for:
+- Database password
+- LLM Provider (OpenAI or Gemini)
+- API keys
+- Model preferences
 
-### Manual Setup
+**Alternative: From GitHub Secrets** (requires GitHub CLI):
+```powershell
+# Pull secrets from your GitHub repository
+.\scripts\env-setup.ps1 -Source github -Repository "owner/repo"
+```
+
+**Alternative: Manual .env Creation**:
 
 Create a `.env` file in the root directory:
 
@@ -757,9 +775,27 @@ For CI/CD and deployment, set up GitHub repository secrets:
    - `GEMINI_API_KEY` - Your Google Gemini API key
    - `GEMINI_MODEL` - Model name (e.g., "gemini-1.5-flash")
 
+### CI/CD Pipeline
+
+The GitHub Actions workflow automatically creates `.env` files from secrets during:
+- **Docker builds**: `.env` generated before building images
+- **Staging deployment**: Environment-specific `.env` created
+- **Production deployment**: Production `.env` generated from protected secrets
+
+No `.env` files are committed to the repository. They are created dynamically on each deployment.
+
 ### Environment Variables (Docker)
 
-For Docker deployments, the pipeline automatically creates `.env` files from GitHub secrets.
+For Docker Compose deployments, ensure `.env` file exists in the root directory:
+```powershell
+# Check if .env exists
+if (-not (Test-Path .env)) {
+    .\scripts\env-setup.ps1 -Source interactive
+}
+
+# Start services
+docker-compose up -d
+```
 
 ### Kubernetes Secrets
 
