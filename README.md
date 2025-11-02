@@ -120,19 +120,19 @@ CREATE DATABASE cv_analyzer;
 
 **All Platforms** (Windows/macOS/Linux):
 ```bash
-cd backend
-
-# Restore packages
-dotnet restore
+# From the root directory
+dotnet restore analyze-cv.sln
 
 # Update appsettings.json with your API key and database connection
 
 # Run migrations
+cd backend
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 
-# Start backend
-dotnet run
+# Start backend (from root directory)
+cd ..
+dotnet run --project backend/CVAnalyzer.Api.csproj
 # API: http://localhost:5000
 ```
 
@@ -445,12 +445,11 @@ The project includes a comprehensive CI/CD pipeline (`.github/workflows/ci-cd.ym
 ### Running Locally
 
 ```powershell
-# Backend
-cd backend
-dotnet restore
-dotnet build --configuration Release
-dotnet test
-dotnet format --verify-no-changes
+# Backend (from root directory)
+dotnet restore analyze-cv.sln
+dotnet build analyze-cv.sln --configuration Release
+dotnet test analyze-cv.sln
+dotnet format analyze-cv.sln --verify-no-changes
 
 # Frontend
 cd frontend
