@@ -30,7 +30,8 @@ A production-ready full-stack application that automatically extracts and manage
 - **Database**: PostgreSQL with Entity Framework Core
 - **Containerized**: Docker and Kubernetes ready
 - **CI/CD**: Automated testing, linting, and deployment pipelines
-- **Security**: API key management, CORS, input validation
+- **Security**: GitHub secrets integration, vulnerability scanning, input validation
+- **Secrets Management**: Automated environment configuration from GitHub secrets
 
 ## 🚀 Quick Start
 
@@ -416,6 +417,31 @@ Located in `.github/workflows/ci-cd.yml`
    - Trivy vulnerability scanning
    - SARIF upload to GitHub
 
+## 🔄 CI/CD Pipeline
+
+### GitHub Actions Workflow
+
+The project includes a comprehensive CI/CD pipeline (`.github/workflows/ci-cd.yml`) with:
+
+**Security-First Approach**:
+- Uses GitHub repository secrets (never hardcoded values)
+- Automatic `.env` file generation from secrets during deployment
+- Vulnerability scanning with Trivy
+- Dockerfile linting with Hadolint
+
+**Multi-Stage Pipeline**:
+1. **Backend Build & Test**: .NET 8.0 build, unit tests, code coverage, C# linting
+2. **Frontend Build & Test**: Node.js build, ESLint, TypeScript checks, testing
+3. **Docker Build**: Multi-platform container builds with secret injection
+4. **Security Scan**: Dependency and container vulnerability scanning
+5. **Deploy Staging**: Automatic deployment to staging on `develop` branch
+6. **Deploy Production**: Manual approval deployment to production on `main` branch
+
+**Environment Management**:
+- Automatic environment file creation from GitHub secrets
+- Separate staging and production configurations
+- No secrets exposed in logs or build artifacts
+
 ### Running Locally
 
 ```powershell
@@ -558,17 +584,69 @@ GET /health
 
 ## ⚙️ Configuration
 
-### Environment Variables (Docker)
+### Environment Variables
+
+The application uses environment variables for configuration. **Never commit actual API keys or passwords to version control.**
+
+### Local Development Setup
+
+**Quick Setup with Script**:
+```powershell
+# Windows (PowerShell)
+.\scripts\create-env-template.ps1
+
+# macOS/Linux (Bash)
+./scripts/create-env-template.sh
+```
+
+This creates a `.env` file with placeholder values that you need to replace with actual secrets.
+
+### Manual Setup
+
+Create a `.env` file in the root directory:
 
 ```bash
-# .env file
+# Database Configuration
 DB_PASSWORD=your_secure_password
-LLM_PROVIDER=OpenAI  # or Gemini
-OPENAI_API_KEY=sk-your-key
+
+# LLM Provider (OpenAI or Gemini)
+LLM_PROVIDER=OpenAI
+
+# OpenAI Configuration
+OPENAI_API_KEY=sk-your-openai-api-key
 OPENAI_MODEL=gpt-4o-mini
-GEMINI_API_KEY=your-key
+
+# Gemini Configuration (if using Gemini)
+GEMINI_API_KEY=your-gemini-api-key
 GEMINI_MODEL=gemini-1.5-flash
 ```
+
+### GitHub Secrets Setup
+
+For CI/CD and deployment, set up GitHub repository secrets:
+
+**Automated Setup**:
+```powershell
+# Interactive setup with GitHub CLI
+.\scripts\setup-github-secrets.ps1 -Interactive
+
+# Or get instructions for manual setup
+.\scripts\setup-github-secrets.ps1
+```
+
+**Manual Setup**:
+1. Go to your repository → Settings → Secrets and variables → Actions
+2. Add these repository secrets:
+   - `DB_PASSWORD` - Database password
+   - `LLM_PROVIDER` - Either "OpenAI" or "Gemini"
+   - `OPENAI_API_KEY` - Your OpenAI API key
+   - `OPENAI_MODEL` - Model name (e.g., "gpt-4o-mini")
+   - `GEMINI_API_KEY` - Your Google Gemini API key
+   - `GEMINI_MODEL` - Model name (e.g., "gemini-1.5-flash")
+
+### Environment Variables (Docker)
+
+For Docker deployments, the pipeline automatically creates `.env` files from GitHub secrets.
 
 ### Kubernetes Secrets
 
@@ -580,6 +658,7 @@ metadata:
   name: cv-analyzer-secrets
 stringData:
   openai-api-key: "sk-your-key"
+  gemini-api-key: "your-gemini-key"
   database-password: "secure-password"
 ```
 
@@ -593,6 +672,10 @@ stringData:
     "OpenAI": {
       "ApiKey": "sk-your-key",
       "Model": "gpt-4o-mini"
+    },
+    "Gemini": {
+      "ApiKey": "your-gemini-key",
+      "Model": "gemini-1.5-flash"
     }
   },
   "ConnectionStrings": {
@@ -696,8 +779,14 @@ cv-analyzer/
 │   │   └── services/         # API client
 │   ├── Dockerfile
 │   └── nginx.conf
+├── scripts/                  # Development and deployment scripts
+│   ├── create-env-template.ps1    # PowerShell env template generator
+│   ├── create-env-template.sh     # Bash env template generator
+│   ├── setup-github-secrets.ps1   # GitHub secrets setup helper
+│   └── populate-env-from-secrets.ps1 # GitHub CLI env populator
 ├── k8s/                      # Kubernetes manifests
-├── .github/workflows/        # CI/CD
+├── .github/workflows/        # CI/CD pipeline
+│   └── ci-cd.yml            # Main workflow with secrets integration
 ├── test-data/                # Sample CVs
 ├── docker-compose.yml
 └── README.md
@@ -706,26 +795,41 @@ cv-analyzer/
 ## 🚀 Deployment Checklist
 
 ### Pre-deployment
-- [ ] Configure API keys
-- [ ] Set database password
-- [ ] Review resource limits
-- [ ] Set up SSL certificates
-- [ ] Configure backup strategy
+- [ ] Set up GitHub repository secrets:
+  - [ ] `DB_PASSWORD` - Secure database password
+  - [ ] `LLM_PROVIDER` - "OpenAI" or "Gemini"
+  - [ ] `OPENAI_API_KEY` - Your OpenAI API key
+  - [ ] `GEMINI_API_KEY` - Your Gemini API key (if using)
+  - [ ] `OPENAI_MODEL` and `GEMINI_MODEL` - Model names
+- [ ] Review resource limits in Kubernetes manifests
+- [ ] Set up SSL certificates for production
+- [ ] Configure backup strategy for database
+- [ ] Set up monitoring and logging
 
 ### Docker
 - [ ] Test: `docker-compose up`
 - [ ] Verify all services healthy
-- [ ] Test file upload and AI
+- [ ] Test file upload and AI processing
 - [ ] Check database persistence
+- [ ] Verify environment variables loaded correctly
 
 ### Kubernetes
-- [ ] Update secrets.yaml
-- [ ] Build and push images
-- [ ] Run deploy-k8s.ps1
-- [ ] Verify pods running
-- [ ] Check LoadBalancer IP
-- [ ] Configure DNS
-- [ ] Set up monitoring
+- [ ] Update secrets.yaml with base64 encoded values
+- [ ] Build and push images to container registry
+- [ ] Run deploy-k8s.ps1 or apply manifests manually
+- [ ] Verify pods running: `kubectl get pods -n cv-analyzer`
+- [ ] Check services: `kubectl get svc -n cv-analyzer`
+- [ ] Test LoadBalancer IP access
+- [ ] Configure DNS pointing to LoadBalancer
+- [ ] Set up monitoring (Prometheus, Grafana)
+
+### Security Verification
+- [ ] Verify no secrets in container images
+- [ ] Check vulnerability scan results in GitHub Actions
+- [ ] Confirm API endpoints require authentication where needed
+- [ ] Verify CORS settings for production domains
+- [ ] Test rate limiting (if implemented)
+- [ ] Confirm database access is restricted
 
 
 ## 🙏 Acknowledgments
