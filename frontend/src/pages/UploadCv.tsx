@@ -12,11 +12,31 @@ function UploadCv() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [extractedData, setExtractedData] = useState<Candidate | null>(null);
   const [rawText, setRawText] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+
+      // Check if file is empty
+      if (selectedFile.size === 0) {
+        setError('File is empty');
+        return;
+      }
+
+      // Check file type
+      const validTypes = ['.pdf', '.docx', '.doc', '.txt'];
+      const fileExt = selectedFile.name.substring(selectedFile.name.lastIndexOf('.')).toLowerCase();
+      
+      if (!fileExt || !validTypes.includes(fileExt)) {
+        setError('Please select a valid file type (PDF, DOCX, DOC, TXT)');
+        setFile(null); // Clear invalid file
+        return;
+      }
+
+      setError(null);
+      setFile(selectedFile);
     }
   };
 
@@ -27,6 +47,7 @@ function UploadCv() {
     }
 
     setUploading(true);
+    setError(null);
     try {
       const response = await cvApi.uploadCv(file);
       
@@ -39,7 +60,9 @@ function UploadCv() {
         toast.error(response.message || 'Failed to process CV');
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Error uploading CV');
+      const errorMessage = error.response?.data?.message || 'Failed to upload CV';
+      setError('Failed to upload CV');
+      toast.error(errorMessage);
       console.error('Upload error:', error);
     } finally {
       setUploading(false);
@@ -75,11 +98,18 @@ function UploadCv() {
           candidate information for you to review.
         </p>
 
+        {error && (
+          <div className="error-message card" role="alert">
+            {error}
+          </div>
+        )}
+
         <div className="upload-card card">
           <div className="file-upload-area">
             <input
               type="file"
               id="cv-file"
+              data-testid="cv-file-input"
               accept=".pdf,.docx,.doc,.txt"
               onChange={handleFileChange}
               className="file-input"
@@ -115,7 +145,7 @@ function UploadCv() {
             {uploading ? (
               <>
                 <div className="spinner-small"></div>
-                Processing...
+                <span>Uploading...</span>
               </>
             ) : (
               'Upload and Process CV'

@@ -91,3 +91,11 @@
 .processing-info p {
   color: var(--text-secondary);
 }
+
+.error-message {
+  padding: 1rem;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}

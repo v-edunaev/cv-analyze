@@ -4,6 +4,7 @@ import { candidatesApi } from '../services/api';
 import { Candidate } from '../types';
 import CandidateTable from '../components/CandidateTable';
 import CandidateDetailModal from '../components/CandidateDetailModal';
+import DeleteConfirmationDialog from '../components/DeleteConfirmationDialog';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -16,6 +17,8 @@ function Dashboard() {
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortDescending, setSortDescending] = useState(true);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetchCandidates();
@@ -27,14 +30,14 @@ function Dashboard() {
       const response = await candidatesApi.getCandidates(
         page,
         pageSize,
-        search || undefined,
+        search,
         sortBy,
         sortDescending
       );
       setCandidates(response.candidates);
       setTotalCount(response.totalCount);
     } catch (error: any) {
-      toast.error('Error loading candidates');
+      toast.error('Failed to load candidates');
       console.error('Error fetching candidates:', error);
     } finally {
       setLoading(false);
@@ -64,17 +67,22 @@ function Dashboard() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this candidate?')) {
-      return;
-    }
+    setDeleteId(id);
+    setShowDeleteConfirm(true);
+  };
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
     try {
-      await candidatesApi.deleteCandidate(id);
+      await candidatesApi.deleteCandidate(deleteId);
       toast.success('Candidate deleted successfully');
       fetchCandidates();
     } catch (error) {
       toast.error('Error deleting candidate');
       console.error('Error deleting candidate:', error);
+    } finally {
+      setShowDeleteConfirm(false);
+      setDeleteId(null);
     }
   };
 
@@ -109,9 +117,9 @@ function Dashboard() {
 
       {loading ? (
         <div className="loading">
-          <div className="spinner"></div>
+          <div className="spinner" data-testid="loading-spinner"></div>
         </div>
-      ) : (
+      ) : candidates.length > 0 ? (
         <>
           <CandidateTable
             candidates={candidates}
@@ -132,7 +140,7 @@ function Dashboard() {
                 Previous
               </button>
               <span className="page-info">
-                Page {page} of {totalPages}
+                Showing {((page - 1) * pageSize) + 1}-{Math.min(page * pageSize, totalCount)} of {totalCount}
               </span>
               <button
                 className="btn-secondary"
@@ -144,12 +152,28 @@ function Dashboard() {
             </div>
           )}
         </>
+      ) : (
+        <div className="empty-state card">
+          <div className="empty-icon">📋</div>
+          <h3>No candidates found</h3>
+          <p>Upload a CV to get started</p>
+        </div>
       )}
 
       {selectedCandidate && (
         <CandidateDetailModal
           candidate={selectedCandidate}
           onClose={handleCloseDetails}
+        />
+      )}
+      {showDeleteConfirm && (
+        <DeleteConfirmationDialog
+          message="Are you sure you want to delete this candidate?"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => {
+            setShowDeleteConfirm(false);
+            setDeleteId(null);
+          }}
         />
       )}
     </div>

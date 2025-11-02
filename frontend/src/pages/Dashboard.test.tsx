@@ -14,6 +14,8 @@ vi.mock('../services/api', () => ({
   }
 }))
 
+import { toast } from 'react-toastify'
+
 // Mock react-toastify
 vi.mock('react-toastify', () => ({
   toast: {
@@ -43,7 +45,7 @@ describe('Dashboard Component', () => {
     renderDashboard()
     
     expect(screen.getByText('Candidates Dashboard')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText(/search candidates/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/search by name/i)).toBeInTheDocument()
     
     await waitFor(() => {
       expect(screen.getByText('John Smith')).toBeInTheDocument()
@@ -58,13 +60,9 @@ describe('Dashboard Component', () => {
     renderDashboard()
     
     await waitFor(() => {
-      expect(mockGetCandidates).toHaveBeenCalledWith({
-        page: 1,
-        pageSize: 10,
-        search: '',
-        sortBy: 'createdAt',
-        sortDescending: true
-      })
+      expect(mockGetCandidates).toHaveBeenCalledWith(
+        1, 10, '', 'createdAt', true
+      )
     })
   })
 
@@ -79,17 +77,13 @@ describe('Dashboard Component', () => {
       expect(screen.getByText('John Smith')).toBeInTheDocument()
     })
     
-    const searchInput = screen.getByPlaceholderText(/search candidates/i)
+    const searchInput = screen.getByPlaceholderText(/search by name/i)
     await user.type(searchInput, 'jane')
     
     await waitFor(() => {
-      expect(mockGetCandidates).toHaveBeenCalledWith({
-        page: 1,
-        pageSize: 10,
-        search: 'jane',
-        sortBy: 'createdAt',
-        sortDescending: true
-      })
+      expect(mockGetCandidates).toHaveBeenCalledWith(
+        1, 10, 'jane', 'createdAt', true
+      )
     })
   })
 
@@ -109,13 +103,9 @@ describe('Dashboard Component', () => {
     await user.click(nameHeader)
     
     await waitFor(() => {
-      expect(mockGetCandidates).toHaveBeenCalledWith({
-        page: 1,
-        pageSize: 10,
-        search: '',
-        sortBy: 'fullName',
-        sortDescending: false
-      })
+      expect(mockGetCandidates).toHaveBeenCalledWith(
+        1, 10, '', 'name', false
+      )
     })
   })
 
@@ -136,8 +126,8 @@ describe('Dashboard Component', () => {
     
     // Should show modal with candidate details
     await waitFor(() => {
-      expect(screen.getByText(/candidate details/i)).toBeInTheDocument()
-      expect(screen.getByText('john.smith@email.com')).toBeInTheDocument()
+      expect(screen.getByText('Contact Information')).toBeInTheDocument()
+      expect(screen.queryAllByText('john.smith@email.com')).toHaveLength(2) // One in table, one in modal
     })
   })
 
@@ -177,7 +167,7 @@ describe('Dashboard Component', () => {
     const mockGetCandidates = vi.mocked(api.candidatesApi.getCandidates)
     
     // Create a promise that we can control
-    let resolveCandidates: (value: any) => void
+    let resolveCandidates: (value: typeof mockCandidateListResponse) => void
     const candidatesPromise = new Promise((resolve) => {
       resolveCandidates = resolve
     })
@@ -186,13 +176,13 @@ describe('Dashboard Component', () => {
     renderDashboard()
     
     // Should show loading state
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
     
     // Resolve the promise
     resolveCandidates!(mockCandidateListResponse)
     
     await waitFor(() => {
-      expect(screen.queryByText(/loading/i)).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument()
       expect(screen.getByText('John Smith')).toBeInTheDocument()
     })
   })
@@ -204,7 +194,7 @@ describe('Dashboard Component', () => {
     renderDashboard()
     
     await waitFor(() => {
-      expect(screen.getByText(/failed to load candidates/i)).toBeInTheDocument()
+      expect(toast.error).toHaveBeenCalledWith('Failed to load candidates')
     })
   })
 
@@ -250,13 +240,9 @@ describe('Dashboard Component', () => {
     await user.click(nextButton)
     
     await waitFor(() => {
-      expect(mockGetCandidates).toHaveBeenCalledWith({
-        page: 2,
-        pageSize: 10,
-        search: '',
-        sortBy: 'createdAt',
-        sortDescending: true
-      })
+      expect(mockGetCandidates).toHaveBeenCalledWith(
+        2, 10, '', 'createdAt', true
+      )
     })
   })
 })

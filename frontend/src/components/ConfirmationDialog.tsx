@@ -13,6 +13,7 @@ interface ConfirmationDialogProps {
 function ConfirmationDialog({ candidate, rawText, onConfirm, onCancel }: ConfirmationDialogProps) {
   const [editedCandidate, setEditedCandidate] = useState<Candidate>(candidate);
   const [showRawText, setShowRawText] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
 
   const handleChange = (field: keyof Candidate, value: any) => {
     setEditedCandidate(prev => ({ ...prev, [field]: value }));
@@ -80,22 +81,36 @@ function ConfirmationDialog({ candidate, rawText, onConfirm, onCancel }: Confirm
                 <h3>Personal Information</h3>
                 <div className="form-grid">
                   <div className="form-field">
-                    <label>Full Name *</label>
+                    <label htmlFor="fullName">Full Name *</label>
                     <input
+                      id="fullName"
                       type="text"
                       value={editedCandidate.fullName}
-                      onChange={e => handleChange('fullName', e.target.value)}
+                      onChange={e => {
+                        handleChange('fullName', e.target.value);
+                        setValidationErrors(prev => ({ ...prev, fullName: '' }));
+                      }}
                       required
                     />
+                    {(!editedCandidate.fullName || validationErrors.fullName) && (
+                      <div className="error-text">Name is required</div>
+                    )}
                   </div>
                   <div className="form-field">
-                    <label>Email *</label>
+                    <label htmlFor="email">Email *</label>
                     <input
+                      id="email"
                       type="email"
                       value={editedCandidate.email}
-                      onChange={e => handleChange('email', e.target.value)}
+                      onChange={e => {
+                        handleChange('email', e.target.value);
+                        setValidationErrors(prev => ({ ...prev, email: '' }));
+                      }}
                       required
                     />
+                    {(!editedCandidate.email || validationErrors.email) && (
+                      <div className="error-text">Email is required</div>
+                    )}
                   </div>
                   <div className="form-field">
                     <label>Phone</label>
@@ -292,8 +307,16 @@ function ConfirmationDialog({ candidate, rawText, onConfirm, onCancel }: Confirm
           </button>
           <button
             className="btn-primary"
-            onClick={() => onConfirm(editedCandidate)}
-            disabled={!editedCandidate.fullName || !editedCandidate.email}
+            onClick={() => {
+              if (!editedCandidate.fullName || !editedCandidate.email) {
+                setValidationErrors({
+                  fullName: !editedCandidate.fullName ? 'Name is required' : '',
+                  email: !editedCandidate.email ? 'Email is required' : ''
+                });
+                return;
+              }
+              onConfirm(editedCandidate);
+            }}
           >
             Save Candidate
           </button>

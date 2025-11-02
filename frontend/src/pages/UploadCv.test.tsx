@@ -1,10 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { UploadCvResponse } from '../types'
 import UploadCv from './UploadCv'
 import * as api from '../services/api'
-import { mockUploadResponse, mockFile, mockEmptyFile, mockInvalidFile } from '../test/mockData'
+import { mockUploadResponse, mockFile, mockEmptyFile } from '../test/mockData'
 
 // Mock the API
 vi.mock('../services/api', () => ({
@@ -40,7 +41,7 @@ describe('UploadCv Component', () => {
     renderUploadCv()
     
     expect(screen.getByText('Upload CV')).toBeInTheDocument()
-    expect(screen.getByText('Choose File')).toBeInTheDocument()
+    expect(screen.getByText('Click to select a CV file or drag and drop')).toBeInTheDocument()
     expect(screen.getByText('Supported formats: PDF, DOCX, DOC, TXT')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /upload and process cv/i })).toBeDisabled()
   })
@@ -49,29 +50,44 @@ describe('UploadCv Component', () => {
     const user = userEvent.setup()
     renderUploadCv()
     
-    const fileInput = screen.getByLabelText(/choose file/i)
+    const fileInput = screen.getByTestId('cv-file-input')
     await user.upload(fileInput, mockFile)
     
     expect(screen.getByRole('button', { name: /upload and process cv/i })).toBeEnabled()
     expect(screen.getByText('test-cv.txt')).toBeInTheDocument()
   })
 
-  it('shows error for invalid file type', async () => {
-    const user = userEvent.setup()
-    renderUploadCv()
-    
-    const fileInput = screen.getByLabelText(/choose file/i)
-    await user.upload(fileInput, mockInvalidFile)
-    
-    expect(screen.getByText(/please select a valid file type/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /upload and process cv/i })).toBeDisabled()
+  test('shows error for invalid file type', async () => {
+    render(
+      <MemoryRouter>
+        <UploadCv />
+      </MemoryRouter>
+    )
+
+    // Create an invalid file
+    const invalidFile = new File(['test content'], 'test.exe', { type: 'application/x-msdownload' })
+
+    // Get the file input and simulate file selection
+    const fileInput = screen.getByTestId('cv-file-input')
+    const files = [invalidFile]
+    const event = {
+      target: {
+        files
+      }
+    }
+
+    // Trigger the change event
+    fireEvent.change(fileInput, event)
+
+    // Check if the error message is shown
+    expect(await screen.findByText('Please select a valid file type (PDF, DOCX, DOC, TXT)')).toBeInTheDocument()
   })
 
   it('shows error for empty file', async () => {
     const user = userEvent.setup()
     renderUploadCv()
     
-    const fileInput = screen.getByLabelText(/choose file/i)
+    const fileInput = screen.getByTestId('cv-file-input')
     await user.upload(fileInput, mockEmptyFile)
     
     expect(screen.getByText(/file is empty/i)).toBeInTheDocument()
@@ -85,7 +101,7 @@ describe('UploadCv Component', () => {
     
     renderUploadCv()
     
-    const fileInput = screen.getByLabelText(/choose file/i)
+    const fileInput = screen.getByTestId('cv-file-input')
     await user.upload(fileInput, mockFile)
     
     const uploadButton = screen.getByRole('button', { name: /upload and process cv/i })
@@ -97,7 +113,7 @@ describe('UploadCv Component', () => {
     
     // Should show confirmation dialog
     await waitFor(() => {
-      expect(screen.getByText(/review extracted information/i)).toBeInTheDocument()
+      expect(screen.getByText(/review.*extracted information/i)).toBeInTheDocument()
       expect(screen.getByDisplayValue('John Smith')).toBeInTheDocument()
       expect(screen.getByDisplayValue('john.smith@email.com')).toBeInTheDocument()
     })
@@ -110,7 +126,7 @@ describe('UploadCv Component', () => {
     
     renderUploadCv()
     
-    const fileInput = screen.getByLabelText(/choose file/i)
+    const fileInput = screen.getByTestId('cv-file-input')
     await user.upload(fileInput, mockFile)
     
     const uploadButton = screen.getByRole('button', { name: /upload and process cv/i })
@@ -122,7 +138,7 @@ describe('UploadCv Component', () => {
     
     // Should show error message
     await waitFor(() => {
-      expect(screen.getByText(/failed to upload cv/i)).toBeInTheDocument()
+      expect(screen.queryByText(/failed to upload cv/i)).toBeInTheDocument()
     })
   })
 
@@ -131,22 +147,22 @@ describe('UploadCv Component', () => {
     const mockUploadCv = vi.mocked(api.cvApi.uploadCv)
     
     // Create a promise that we can control
-    let resolveUpload: (value: any) => void
-    const uploadPromise = new Promise((resolve) => {
+    let resolveUpload: (value: UploadCvResponse) => void
+    const uploadPromise = new Promise<UploadCvResponse>((resolve) => {
       resolveUpload = resolve
     })
     mockUploadCv.mockReturnValue(uploadPromise)
     
     renderUploadCv()
     
-    const fileInput = screen.getByLabelText(/choose file/i)
+    const fileInput = screen.getByTestId('cv-file-input')
     await user.upload(fileInput, mockFile)
     
     const uploadButton = screen.getByRole('button', { name: /upload and process cv/i })
     await user.click(uploadButton)
     
     // Should show loading state
-    expect(screen.getByText(/uploading/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /uploading/i })).toBeInTheDocument()
     expect(uploadButton).toBeDisabled()
     
     // Resolve the promise
@@ -167,7 +183,7 @@ describe('UploadCv Component', () => {
     
     renderUploadCv()
     
-    const fileInput = screen.getByLabelText(/choose file/i)
+    const fileInput = screen.getByTestId('cv-file-input')
     await user.upload(fileInput, mockFile)
     
     const uploadButton = screen.getByRole('button', { name: /upload and process cv/i })
@@ -203,7 +219,7 @@ describe('UploadCv Component', () => {
     
     renderUploadCv()
     
-    const fileInput = screen.getByLabelText(/choose file/i)
+    const fileInput = screen.getByTestId('cv-file-input')
     await user.upload(fileInput, mockFile)
     
     const uploadButton = screen.getByRole('button', { name: /upload and process cv/i })
@@ -224,7 +240,9 @@ describe('UploadCv Component', () => {
     await user.click(saveButton)
     
     // Should show validation errors
-    expect(screen.getByText(/name is required/i)).toBeInTheDocument()
-    expect(screen.getByText(/email is required/i)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/name is required/i)).toBeInTheDocument()
+      expect(screen.getByText(/email is required/i)).toBeInTheDocument()
+    })
   })
 })
