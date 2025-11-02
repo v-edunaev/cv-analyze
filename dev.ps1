@@ -22,7 +22,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0, HelpMessage = "Action to perform")]
-    [ValidateSet("build", "test", "validate", "docker-validate", "deploy-k8s", "setup-minikube", "cleanup-k8s", "setup-env", "help")]
+    [ValidateSet("build", "test", "validate", "docker-validate", "docker-build", "deploy-k8s", "setup-minikube", "cleanup-k8s", "setup-env", "help")]
     [string]$Action = "help"
 )
 
@@ -50,6 +50,10 @@ switch ($Action) {
         Write-Info "Validating Docker configuration..."
         & "scripts/validate-docker.ps1"
     }
+    "docker-build" {
+        Write-Info "Testing Docker build..."
+        & "scripts/test-docker-build.ps1"
+    }
     "deploy-k8s" {
         Write-Info "Deploying to Kubernetes..."
         & "scripts/deploy-k8s.ps1"
@@ -73,6 +77,7 @@ switch ($Action) {
         Write-Host "  test            - Run tests only" -ForegroundColor Green
         Write-Host "  validate        - Validate project setup" -ForegroundColor Green
         Write-Host "  docker-validate - Validate Docker configuration" -ForegroundColor Green
+        Write-Host "  docker-build    - Test Docker build process" -ForegroundColor Green
         Write-Host "  deploy-k8s      - Deploy to Kubernetes" -ForegroundColor Green
         Write-Host "  setup-minikube  - Setup Minikube for local development" -ForegroundColor Green
         Write-Host "  cleanup-k8s     - Cleanup Kubernetes resources" -ForegroundColor Green

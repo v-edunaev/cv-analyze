@@ -4,6 +4,7 @@ WORKDIR /src
 
 # Copy solution and project files
 COPY analyze-cv.sln .
+COPY backend/Directory.Packages.props backend/
 COPY backend/CVAnalyzer.Api.csproj backend/
 COPY backend/CVAnalyzer.Tests/CVAnalyzer.Tests.csproj backend/CVAnalyzer.Tests/
 

@@ -18,7 +18,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="PdfPig" />
     <PackageReference Include="DocumentFormat.OpenXml" />
-    <PackageReference Include="Microsoft.AspNetCore.Cors" />
   </ItemGroup>
 
 </Project>
