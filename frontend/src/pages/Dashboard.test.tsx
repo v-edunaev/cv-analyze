@@ -167,8 +167,8 @@ describe('Dashboard Component', () => {
     const mockGetCandidates = vi.mocked(api.candidatesApi.getCandidates)
     
     // Create a promise that we can control
-    let resolveCandidates: (value: typeof mockCandidateListResponse) => void
-    const candidatesPromise = new Promise((resolve) => {
+    let resolveCandidates!: (value: typeof mockCandidateListResponse) => void
+    const candidatesPromise = new Promise<typeof mockCandidateListResponse>((resolve) => {
       resolveCandidates = resolve
     })
     mockGetCandidates.mockReturnValue(candidatesPromise)
