@@ -57,6 +57,15 @@ lerna-debug.log*
 frontend/dist/
 frontend/.vite/
 
+# Test coverage reports
+coverage/
+frontend/coverage/
+backend/coverage/
+backend/TestResults/
+*.coverage
+*.coveragexml
+coverage.cobertura.xml
+
 # Environment variables - NEVER commit these files!
 # Use scripts/env-setup.ps1 to generate .env files locally
 .env
