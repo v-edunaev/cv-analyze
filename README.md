@@ -1,6 +1,8 @@
 # CV Analyzer - AI-Powered Resume Management System
 
-A production-ready full-stack application that automatically extracts and manages candidate information from CVs using AI. Built with ASP.NET Core, React, PostgreSQL, and integrated with OpenAI/Gemini APIs.
+**NOT** A production-ready full-stack application that automatically extracts and manages candidate information from CVs using AI. Built with ASP.NET Core, React, PostgreSQL, and integrated with OpenAI/Gemini APIs.
+
+> I'm just testing something
 
 ## 📋 Table of Contents
 - [Features](#-features)
