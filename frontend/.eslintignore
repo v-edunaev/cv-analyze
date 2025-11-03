@@ -1,0 +1,26 @@
+# ESLint Ignore File
+# Build outputs
+dist
+build
+*.min.js
+
+# Dependencies
+node_modules
+
+# Coverage
+coverage
+.nyc_output
+
+# Config files (already handled in eslint.config.js)
+*.config.js
+*.config.ts
+vite.config.ts
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test results
+test-results
+*.log

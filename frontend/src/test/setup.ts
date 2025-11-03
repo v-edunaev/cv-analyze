@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom'
 
+// Ensure global is defined (for jsdom compatibility)
+if (typeof (globalThis as any).global === 'undefined') {
+  (globalThis as any).global = globalThis
+}
+
 // Mock IntersectionObserver
 if (!globalThis.IntersectionObserver) {
   globalThis.IntersectionObserver = class {

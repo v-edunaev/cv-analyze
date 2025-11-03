@@ -72,7 +72,7 @@ function Dashboard() {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!deleteId) return;
+    if (!deleteId) {return;}
     try {
       await candidatesApi.deleteCandidate(deleteId);
       toast.success('Candidate deleted successfully');
