@@ -9,7 +9,7 @@ interface CandidateDetailModalProps {
 
 function CandidateDetailModal({ candidate, onClose }: CandidateDetailModalProps) {
   const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Present';
+    if (!dateString) {return 'Present';}
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
